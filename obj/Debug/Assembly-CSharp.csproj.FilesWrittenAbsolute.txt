@@ -1,0 +1,14 @@
+/Users/terrasaulm1/MCG/Temp/bin/Debug/UnityEngine.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/UnityEditor.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/SimpleSQL_Runtime.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Mono.Cecil.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Unity.DataContract.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/terrasaulm1/MCG/Temp/bin/Debug/Mono.Cecil.Mdb.dll

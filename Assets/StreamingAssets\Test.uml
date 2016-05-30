@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SaveData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <fileName>Test</fileName>
+  <serializedTypes>
+    <string>UnityEngine.Vector3, UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</string>
+    <string>UnityEngine.Quaternion, UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</string>
+    <string>ItemClass, Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</string>
+  </serializedTypes>
+  <serializedData>
+    <DataContainer>
+      <key>Position</key>
+      <value xsi:type="Vector3">
+        <x>20</x>
+        <y>3</y>
+        <z>-5</z>
+      </value>
+    </DataContainer>
+    <DataContainer>
+      <key>Rotation</key>
+      <value xsi:type="Quaternion">
+        <x>0.1</x>
+        <y>0.1</y>
+        <z>0.1</z>
+        <w>1</w>
+        <eulerAngles>
+          <x>10.0645342</x>
+          <y>12.5288076</y>
+          <z>12.5288076</z>
+        </eulerAngles>
+      </value>
+    </DataContainer>
+    <DataContainer>
+      <key>playerItems0</key>
+      <value xsi:type="ItemClass">
+        <name>bone</name>
+        <desc>yummy metal bone</desc>
+        <SOP>0</SOP>
+      </value>
+    </DataContainer>
+    <DataContainer>
+      <key>playerItems1</key>
+      <value xsi:type="ItemClass">
+        <name>knife</name>
+        <desc>cut stuff up</desc>
+        <SOP>0</SOP>
+      </value>
+    </DataContainer>
+    <DataContainer>
+      <key>playerItems2</key>
+      <value xsi:type="ItemClass">
+        <name>meat</name>
+        <desc>feed me</desc>
+        <SOP>0</SOP>
+      </value>
+    </DataContainer>
+  </serializedData>
+</SaveData>
