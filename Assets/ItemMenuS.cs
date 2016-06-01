@@ -90,6 +90,7 @@ public class ItemMenuS : MonoBehaviour {
 		offset *= 10;
 		button.transform.Translate (0, offset, 0);
 	}
+		
 
 	// Update is called once per frame
 	void Update () {

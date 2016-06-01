@@ -13,7 +13,7 @@ public class PlayerS : MonoBehaviour {
 
 	//public DateTime bait1Start;
 	//public DateTime bait2Start;
-	public int SilverCoins=0, GoldCoins=0;
+	public int SilverCoins, GoldCoins;
 	public double bait1StartValSecs=240;
 	public int bait1=100;
 	public int bait1Q=2;
@@ -34,6 +34,9 @@ public class PlayerS : MonoBehaviour {
 	public int minSecondsConstant;
 	public GameManager gameManager;
 	public FormulaS formulas;
+	public PersistentSaving myPS;
+	public PlayerData data;
+	//public static PersistentSaving control;
 
 	public bool showPresentsNotification;
 	public bool showMementoNotifcation;
@@ -57,39 +60,67 @@ public class PlayerS : MonoBehaviour {
 			DontDestroyOnLoad (gameObject);
 			control = this;
 			menuShown = 0;
+			//data = new PlayerData();
+			myPS=new PersistentSaving();
 		} else if (control != this) {
 			Destroy (gameObject);
 		}
 	}
+
+	public void AddBait1(int baitQuality){
+		Debug.Log ("Bait1 is set to 100");
+		bait1 = 100;
+		bait1B = true;
+		bait1Q = baitQuality;
+		Save ();
+
+		//sceneloaded = false; //maybe this would be as good idea INSTEAD of just setting bait text
+		bait1T.text=bait1.ToString();
+	}
+
 	public void Save() {
-
-		BinaryFormatter bf = new BinaryFormatter();
-		FileStream file= File.Create( Application.persistentDataPath+"/playerInfo.dat");
-		PlayerData data = new PlayerData();
-
+		
+		//data = new PlayerData();
+		//Debug.Log ("Went to SAVE command so now we will see if playerInfo.dat was created in the persistent datapath");
 		data.bait1=bait1;
 		data.bait1Q = bait1Q;
 		data.SilverCoins = SilverCoins;
 		data.GoldCoins = GoldCoins;
-
-		bf.Serialize(file, data);
-		file.Close();
+		//Debug.Log ("In Save, data.gold = " + data.GoldCoins);
+	
+		myPS.Save (data);
 	}
 
 	public void Load(){
+		/*
 		if (File.Exists(Application.persistentDataPath+"/playerinfo.dat")){
 			BinaryFormatter bf= new BinaryFormatter();
 			FileStream file = File.Open(Application.persistentDataPath+"/playerinfo.dat", FileMode.Open);
 			PlayerData data = (PlayerData) bf.Deserialize(file);  //CAST your serialized data!
+			file.Close();
 
 			Debug.Log ("we loaded info on bait1 and stuff");
-
+			*/
+			//data = 
+		myPS.Load (ref data);
+		if (data != null) {
 			bait1 = data.bait1;
 			bait1Q = data.bait1Q;
 			SilverCoins = data.SilverCoins;
 			GoldCoins = data.GoldCoins;
+			//Debug.Log ("after Load, data.gold = " + data.GoldCoins);
+			if (bait1 > 100)
+				bait1B = true;
+			else
+				bait1B = false;
+		} else {
+			SilverCoins = 100;
+			GoldCoins = 10;
 		}
+
+		
 	}
+
 	// Use this for initialization
 	void Start () {
 		//we need to read in values from SAVED for the Player on start
@@ -97,10 +128,11 @@ public class PlayerS : MonoBehaviour {
 
 		bait1B = true;
 		bait1=100;
-		bait1T.text=bait1.ToString();
 		bait1Q = 2;
 
 		Load ();
+		//Debug.Log("PlayerS hit Start. set bait1 to 100 but after Load() it is? "+ bait1);
+		bait1T.text=bait1.ToString();
 	}
 	public void LoadLevel (int menuToShow) {
 		
@@ -129,7 +161,9 @@ public class PlayerS : MonoBehaviour {
 				//clean up/remove any creatures whose time is over and add to Presents and Memento
 				//formulas.UpdateSpace ();
 			
-
+				//REMOVE
+				//GoldCoins--;
+				//Save ();
 				}
 
 
@@ -157,10 +191,12 @@ public class PlayerS : MonoBehaviour {
 			formulas.TurnOffCanvasGroup (TrainingCanvas);
 			formulas.TurnOnCanvasGroup (PlayerItemsCanvas);
 			formulas.ShowItemsToPlace ();
+			Save ();
 		}
 		//if ((Application.loadedLevelName=="TrainingArea") && sceneloaded==false) {
 		if ((menuShown==0) && sceneloaded==false) {
 			sceneloaded=true;
+			Load ();
 			bait1T.text = bait1.ToString ();
 			formulas.TurnOffCanvasGroup (SpaceCanvas);
 			formulas.TurnOnCanvasGroup (TrainingCanvas);
@@ -168,12 +204,14 @@ public class PlayerS : MonoBehaviour {
 			formulas.UpdateSpace ();
 		}
 	}
+/*
 	[System.Serializable]
-	class PlayerData{
+	public class PlayerData{
 		public int SilverCoins, GoldCoins;
 		public int bait1;
 		public int bait1Q;
 	}
+*/
 
 	/*
 	public void ClearDebugPanel(){

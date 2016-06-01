@@ -64,6 +64,46 @@ public class FormulaS : MonoBehaviour {
 		aCG.interactable = true;
 		aCG.alpha = 100;
 	}
+
+	public void DebugListCaptCreatures () {
+		List<PlayerMonstersT>playerMonsters = new List<PlayerMonstersT> (from ps in dbManager.Table<PlayerMonstersT> () where ps.MonsterState>0 select ps);
+
+		foreach (PlayerMonstersT aCreature in playerMonsters.ToList()) {
+			//debugText.text += "\nthe placed creature list has: " + aCreature.CreatureID;
+			Debug.Log ("In List of CAPTURED Creatures, creature with ID: " + aCreature.MonsterID);
+		}
+	}
+
+	public void CaptureCreature (int CreatureID) {
+		Debug.Log ("Hit a Creature to Capture and ID was: " + CreatureID);
+		//you clicked on a creature in the Training Area
+		//you can capture it here [taking a picture or sharing it only happens in our special Cage area, not here]
+		//you capture it by tapping on it, which triggers this function
+		//this should get the creature ID and then add this creature to your captured list
+		//PlayerMonstersT find the creatureID
+		PlayerMonstersT tempCreature = (from ps in dbManager.Table<PlayerMonstersT> () where ps.MonsterID == CreatureID select ps).FirstOrDefault ();
+		//if >0 nothing -- return
+		//if <0 change to positive *-1
+		//if 0, change to 1 [default]
+		int tempState=1;
+		if (tempCreature.MonsterState > 0) {
+			Debug.Log ("In Capture: ALREADY CAPTURED");
+			return;
+		}
+		if (tempCreature.MonsterState < 0) {
+			tempState = tempCreature.MonsterState * -1;
+			Debug.Log("In Capture: you have caught a monster that had visited before with ID:" +CreatureID+" and visits: "+tempCreature.MonsterState);
+		}
+		//now update the state in our PlayerMonstersT table
+		PlayerMonstersT playerMons = new PlayerMonstersT {MonsterID=tempCreature.MonsterID,MonsterState=tempState};
+		dbManager.UpdateTable (playerMons);
+
+		//TODO we have some issues -- when we click, do we show them to the cages and they have to put it in an EMPTY cage? Can they remove a current creature
+		//and replace it? Does that UNCAPTURE the removed creature?
+		//Can you have Captured Creatures and then have others on display?
+		//Currently going with you can only place it in an empty cage of the right type. [so you could run and buy one and reclick on creature to capture it]
+	}
+
 	public void CalcBait () {
 		//based on time, bait gets set to a percentage chunk
 		//check time since bait was placed
@@ -158,6 +198,8 @@ public class FormulaS : MonoBehaviour {
 			//Sprite tempSprite = Resources.Load<Sprite>("ItemImages/i3");
 			//place the image in the visual space
 			visualSpaces[aSpace.ID-1].GetComponent<Image>().sprite = tempSprite;
+			//remove listeners on Space Buttons
+			visualSpaces[aSpace.ID-1].GetComponentInChildren<Button>().onClick.RemoveAllListeners();
 		}
 
 
@@ -172,7 +214,13 @@ public class FormulaS : MonoBehaviour {
 			cStartTime = aCreature.StartTime;
 			cEndTime = aCreature.EndTime;
 			cSpaceID = aCreature.SpaceID;
-		
+			int i = cID; //due to CRAZY delegate issue with creating the buttons on the fly
+/*Is the parameter passed into the delegate stored as a reference value?
+Not quite. It's actually being captured in a "closure" that contains all that is needed for the delegate/anonymous method to be called at a later time.
+It's as if the variable was silently converted to a field in an object that was then silently passed to the delegates/anonymous methods 
+when they were finally invoked.
+So create this local, in loop "i", to be captured by the closure every time, so its value is never modified.
+*/
 
 			if (playerScript.bait1<cEndTime){
 				//creature should be removed from DB and calculated for Presents and Mementos
@@ -181,14 +229,16 @@ public class FormulaS : MonoBehaviour {
 			}
 
 			//if CurrentBait is between StartTime and EndTime, it is visible
-			if ((cStartTime >= playerScript.bait1) && (playerScript.bait1 <= cEndTime)) {
+			else if ((cStartTime >= playerScript.bait1) && (playerScript.bait1 <= cEndTime)) {
 				//creature should be made visible
-				Debug.Log ("There is a VISIBLE creature in PlacedCreature with ID: " + cID + " and SPOT is: " + cSpaceID);
+				Debug.Log ("Making SPACES as Capt Buttons. There is a VISIBLE creature in PlacedCreature with ID: " + cID + " and SPOT is: " + cSpaceID);
 				//will get coordinates for space, get image for creature/item combo, will place it in visual space
 				//itemMenu.VisualSpace (cSpaceID, iID, cID);
 				string tempItemCreatureImage= "ItemImages/C"+cID+"I"+iID;
 				Sprite tempSprite2 = Resources.Load <Sprite>(tempItemCreatureImage);
-				visualSpaces[cSpaceID-1].GetComponent<Image>().sprite=tempSprite2;
+				visualSpaces[cSpaceID-1].GetComponent<Image>().sprite=tempSprite2;   //apparently space1 is 0, so cSpaceID should not be -1
+				visualSpaces[cSpaceID-1].GetComponentInChildren<Button> ().onClick.AddListener (
+					() => {CaptureCreature(i);});
 			} else {
 				//safe to remove from local placedCreatureList because they are either over or currently invisible
 				placedCreatureList.Remove(aCreature);
@@ -200,16 +250,27 @@ public class FormulaS : MonoBehaviour {
 		////that will only show the ones that are still in the placed creature list
 	}
 
-	public void RemoveCreatures (){
-		//check startTimes on all PlacedCreatureList
-		//if they have not yet started, remove them and nothing else for them
+	/*
+	public void RemovePlacedCreature (int creatureID){
+		//if here you dont need to do anything but remove it
+		dbManager.Delete<PlacedCreatureT>(creatureID);
+		Debug.Log ("CREATURE REMOVED from PlacedCreatureL No Presents Calculated");
 	}
+	*/
 
 	public void AdjustCreatureEndTime () {
 		//adjust all remaining creatures in PlacedCreatureList
 		//they will all end in 10 minutes from currentTime
 	}
 
+	public void PrintCreaturesToPlace() {
+		List<PlacedCreatureT>placedCreatureList2 = new List<PlacedCreatureT> (from ps in dbManager.Table<PlacedCreatureT> () select ps);
+
+		foreach (PlacedCreatureT aCreature in placedCreatureList2.ToList()) {
+			//debugText.text += "\nthe placed creature list has: " + aCreature.CreatureID;
+			Debug.Log ("In List of Placed, creature with ID: " + aCreature.CreatureID);
+		}
+	}
 
 	public void ShowItemsToPlace () {
 		TurnOnCanvasGroup(PlayerItemsCanvas);
@@ -313,24 +374,54 @@ public class FormulaS : MonoBehaviour {
 		//when you remove an item, if monsters, calculate monster presents [not mementos]
 			//this essentially also clears out currently visible and yet to be visible monsters on it
 		//go through PlacedCreaturesT for the ItemID
+
 		placedCreatureList = new List<PlacedCreatureT> (from ps in dbManager.Table<PlacedCreatureT> () where ps.ItemID==Item select ps);
 		Debug.Log ("in RemovePlacedItems and going to see if there are any creatures assoc. with it.");
 		foreach (PlacedCreatureT aCreature in placedCreatureList.ToList()) {
-			CalculatePresents (aCreature.CreatureID);
+			int cID = aCreature.CreatureID;
+			int iID = aCreature.ItemID;
+			int cStartTime = aCreature.StartTime;
+			int cEndTime = aCreature.EndTime;
+			int cSpaceID = aCreature.SpaceID;
+
+			if (playerScript.bait1<cEndTime){
+				//creature should be removed from DB and calculated for Presents
+				Debug.Log("This should NOT be being called. ID: "+cID);
+				CalculatePresents(cID);
+			}
+
+			//if CurrentBait is between StartTime and EndTime, it is visible
+			if ((cStartTime >= playerScript.bait1) && (playerScript.bait1 <= cEndTime)) {
+				//creature is visible -- should cut off some of the Presents maybe?
+				Debug.Log ("We RemovedPlacedItem and there were visible creatures to remove with ID: " + cID + " and SPOT is: " + cSpaceID);
+				CalculatePresents(cID);
+			} else {
+				//any remaining creatures have not shown up yet and so since item being removed, creature should be removed but no Presents
+				//RemovePlacedCreature(cID);
+				dbManager.Delete<PlacedCreatureT>(aCreature);
+				Debug.Log ("CREATURE REMOVED from PlacedCreatureL No Presents Calculated");
+			}
+
+
+			//CalculatePresents (aCreature.CreatureID);
 			Debug.Log ("RemovedPlacedItem had this creature: " + aCreature.CreatureID);
 		}
 		//for each creature who was at the item
 		//call CalculatePresents(CreatureID)
 		//which will remove from the PlacedCreaturesT table
+		//then refresh the playersItemList
+		ShowItemsToPlace();
 	}
 
 
 	public void PlaceCreatures (int thisItemID, int thisSpace) {
+		Debug.Log("in PLACE CREATURES!!!");
 		//if Bait1 and Bait2 are false, return
 		//if Bait1 and/or Bait2 is true, but neither percentage is >= 25%, return
-		Debug.Log("in PLACE CREATURES!!!");
-		if (playerScript.bait1 <= 25)
+		if (playerScript.bait1 <= 25) {
+			Debug.Log("but bait less than 25% or bait1/bait2 false -- so return");
 			return;
+		}
 
 		//loop through each item placed in scene: use SpaceT table
 
@@ -405,7 +496,7 @@ B3 L [0 = 5%, 1 = 35%, 2 = 35%, 3 = 25%]
 				//if qMonster.ID in PlacedCreatureT then REMOVE as an option
 				PlacedCreatureT templist = (from ps in dbManager.Table<PlacedCreatureT>() where ps.CreatureID == qMonster.ID select ps).FirstOrDefault ();
 				if (templist != null) {
-					Debug.Log ("CREATURE ALREDY PLACED, SO REMOVED from list of qualified creatures");
+					Debug.Log ("CREATURE ALREDY in a Space, SO REMOVED from list of qualified creatures");
 					qualifiedCreatureList.Remove (qMonster);
 				}
 			}
@@ -566,7 +657,7 @@ B3 L [0 = 5%, 1 = 35%, 2 = 35%, 3 = 25%]
 	}
 
 	public void CalculatePresents (int CreatureID) {
-		Debug.Log ("Calculating Presents");
+		Debug.Log ("Calculating Presents for creature ID: "+CreatureID);
 		//totLesser and totUpper are global vars
 		int totLesser, totUpper;
 		int rarityLvl=1;
@@ -624,5 +715,19 @@ B3 L [0 = 5%, 1 = 35%, 2 = 35%, 3 = 25%]
 		//no memento for creature already
 		//chance 1 out of 10, that memento will be given
 		return false;
+	}
+
+	public void ShowPresents () {
+		//if here then show presents screen has been activated
+		//this means you should be showing a list of all the presents now
+		//and an AcceptPresents() button to call AcceptPresents
+
+		//showing from PresentsToAcceptT table: Creature Image, Item Image, Lesser Given, Upper Given
+		//for now, just show Creature ID and Item ID, Lesser and Upper given 
+		//and of course show the Accept button
+	}
+	public void AcceptPresents () {
+		//if called, clicked button and should add up all presents and then clear out PresentsToAcceptT table
+		//be sure to update Silver and Gold and save them and update their text
 	}
 }

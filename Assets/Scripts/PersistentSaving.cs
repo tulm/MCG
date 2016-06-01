@@ -3,53 +3,38 @@ using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-public class PersistentSaving : MonoBehaviour {
-	/*
-	public static PersistentSaving control;
-	public float health;
+public class PersistentSaving {
 
-	void Awake() {
-		if (control == null) {
-			DontDestroyOnLoad (gameObject);
-			control = this;
-		} else if (control != this) {
-			Destroy (gameObject);
-		}
-	}
-	public void Save() {
+	//public static PersistentSaving control;
+
+	public void Save(PlayerData data) {
 		
-			BinaryFormatter bf = new BinaryFormatter();
-			FileStream file= File.Create( Application.persistentDataPath+"/playerInfo.dat");
-			PlayerData data = new PlayerData();
-			data.health=health;
-			bf.Serialize(file, data);
-			file.Close();
+		BinaryFormatter bf = new BinaryFormatter();
+		FileStream file= File.Create( Application.persistentDataPath+"/playerInfo.dat");
+		bf.Serialize(file, data);
+		file.Close();
 		}
 
-	public void Load(){
+	public void Load(ref PlayerData data){
 		if (File.Exists(Application.persistentDataPath+"/playerinfo.dat")){
 			BinaryFormatter bf= new BinaryFormatter();
 			FileStream file = File.Open(Application.persistentDataPath+"/playerinfo.dat", FileMode.Open);
-			PlayerData data = (PlayerData) bf.Deserialize(file);  //CAST your serialized data!
-
-			data.health = health; //shouldnt this be the reverse order?
+			//PlayerData data = (PlayerData) bf.Deserialize(file);  //CAST your serialized data!
+			data = (PlayerData) bf.Deserialize(file);  //CAST your serialized data!
+			file.Close();
+			//Debug.Log ("we loaded info on bait1 and stuff and gold was: "+data.GoldCoins);
+			//return data;
 		}
+		//return null;
 	}
-
+	/*
 	[System.Serializable]
-	class PlayerData{
-		public float health;
+	public class PlayerData{
+		public int SilverCoins, GoldCoins;
+		public int bait1;
+		public int bait1Q;
 	}
 
+*/
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-	*/
 }
