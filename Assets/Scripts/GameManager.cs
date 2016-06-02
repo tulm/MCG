@@ -55,7 +55,6 @@ public class GameManager : MonoBehaviour {
 	public void GoToMinimize ()
 	{
 		//Debug.Log ("sent to minimize");
-		//debugText.text += "\nGameManager: sent to minimize";
 		playerScript.Save();
 		lastMinimize = DateTime.Now;
 	}

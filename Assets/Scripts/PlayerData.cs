@@ -7,7 +7,7 @@ public class PlayerData {
 	public int SilverCoins, GoldCoins;
 	public int bait1;
 	public int bait1Q;
-
+	public double bait1StartValSecs;
 
 	public /*nothing goes here*/ PlayerData() {
 		// initialize
@@ -15,5 +15,6 @@ public class PlayerData {
 		bait1Q = 1;
 		SilverCoins = 0;
 		GoldCoins = 0;
+		bait1StartValSecs = 240;
 	}
 }

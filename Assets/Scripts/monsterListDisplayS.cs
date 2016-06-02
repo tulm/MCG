@@ -40,7 +40,7 @@ public class monsterListDisplayS : MonoBehaviour {
 	public InputField fi3F;
 	private GameObject newGO;
 	public Sprite mySprite;
-	private bool madeGO1=false;
+//	private bool madeGO1=false;
 
 	void Start() {
 		ResetFields ();

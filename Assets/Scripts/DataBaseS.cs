@@ -11,13 +11,13 @@ public class DataBaseS : MonoBehaviour {
 		//string sql = "INSERT INTO MonsterTypeT"+" (Name, Description) "+" VALUES (?,?)";
 		//dbManager.Execute (sql, "name2", "my descriptoin is something else");
 		bool yn=false;
-		dbManager.QueryFirstRecord<MonsterTypes>(out yn, sql);
+		dbManager.QueryFirstRecord<MonsterT>(out yn, sql);
 		Debug.Log (yn);
 
 
-		List<MonsterTypes> monsterList= dbManager.Query<MonsterTypes> (sql);
+		List<MonsterT> monsterList= dbManager.Query<MonsterT> (sql);
 		Debug.Log ("something: "+ monsterList [0]);
-		foreach (MonsterTypes monstertype in monsterList)
+		foreach (MonsterT monstertype in monsterList)
 		{
 			Debug.Log("A monster row id was: "+ monstertype.ID);
 		}
@@ -26,12 +26,13 @@ public class DataBaseS : MonoBehaviour {
 		//List<MonsterTypes> mts= new List<MonsterTypes> (from w dbManager.Table<table1>() select w);
 	}
 
-
+	/*
 	class MonsterTypes{
 		public int ID;
 		public string Name;
 		public string Description;
 	}
+	*/
 
 	// Update is called once per frame
 	void Update () {
